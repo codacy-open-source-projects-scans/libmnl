@@ -393,7 +393,24 @@ EXPORT_SYMBOL uint64_t mnl_attr_get_u64(const struct nlattr *attr)
  * mnl_attr_get_uint - returns 64-bit unsigned integer attribute.
  * \param attr pointer to netlink attribute
  *
- * This function returns the 64-bit value of the attribute payload.
+ * This helper function reads the variable-length netlink attribute NLA_UINT
+ * that provides a 32-bit or 64-bit integer payload. Its use is recommended only
+ * in these cases.
+ *
+ * Recommended validation for NLA_UINT is:
+ *
+ * \verbatim
+	if (!mnl_attr_validate(attr, NLA_U32) &&
+	    !mnl_attr_validate(attr, NLA_U64)) {
+		perror("mnl_attr_validate");
+		return MNL_CB_ERROR;
+	}
+\endverbatim
+ *
+ * \returns the 64-bit value of the attribute payload. On error, it returns
+ * UINT64_MAX if the length of the netlink attribute is not an 8-bit, 16-bit,
+ * 32-bit and 64-bit integer. Therefore, there is no way to distinguish between
+ * UINT64_MAX and an error. Also, errno is never set.
  */
 EXPORT_SYMBOL uint64_t mnl_attr_get_uint(const struct nlattr *attr)
 {
